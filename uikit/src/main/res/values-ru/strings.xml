@@ -1,0 +1,17 @@
+<resources>
+    <string name="grant_permission">Предоставьте разрешение</string>
+    <string name="confirm_permission">ОК</string>
+    <string name="alert_permission_title">Требуется разрешение</string>
+    <string name="read_contacts_description">Приложению необходим доступ к вашим контактам, чтобы вы могли
+        просматривать свой список контактов.</string>
+    <string name="read_contacts_declined">Вам навсегда закрыт доступ к вашим контактам. Пожалуйста, перейдите в
+        настройки и включите разрешение вручную.</string>
+    <string name="write_contacts_description">Чтобы мы могли находить и удалять повторяющиеся контакты, приложению
+        требуется разрешение на изменение данных.</string>
+    <string name="write_contacts_declined">Функция удаления дубликатов недоступна, поскольку доступ к контактной
+        записи заблокирован. Пожалуйста, разрешите редактирование контактов в настройках устройства.</string>
+    <string name="call_phone_description">Это разрешение позволит вам совершать звонки выбранным контактам одним
+        нажатием кнопки.</string>
+    <string name="call_phone_declined">Звонки недоступны. Чтобы звонить контактам непосредственно из приложения,
+        активируйте разрешение на телефонный звонок в настройках.</string>
+</resources>

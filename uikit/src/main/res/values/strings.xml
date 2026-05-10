@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name" translatable="false">ContactsApp</string>
+
+    <string name="grant_permission">Grant permission</string>
+    <string name="confirm_permission">OK</string>
+    <string name="alert_permission_title">Permission required</string>
+    <string name="read_contacts_description">The app needs access to your contacts so that you can view your contact
+        list.</string>
+    <string name="read_contacts_declined">You have permanently denied access to your contacts. Please go to settings
+        and enable the permission manually.</string>
+    <string name="write_contacts_description">In order for us to find and delete duplicate contacts, the app needs
+        permission to change the data.</string>
+    <string name="write_contacts_declined">The duplicate removal function is not available because access to the
+        contact record is blocked. Please allow the editing of contacts in the device settings.</string>
+    <string name="call_phone_description">This permission will allow you to make calls to selected contacts at the
+        touch of a button.</string>
+    <string name="call_phone_declined">Calls are unavailable. To call contacts directly from the app, activate the
+        phone call permission in the settings.</string>
+</resources>
