@@ -50,7 +50,7 @@ fun PermissionDialog(
                     text = if (isPermanentlyDeclined) {
                         stringResource(R.string.grant_permission)
                     } else {
-                        stringResource(R.string.confirm_permission)
+                        stringResource(R.string.confirm)
                     },
                     fontWeight = FontWeight.Bold
                 )

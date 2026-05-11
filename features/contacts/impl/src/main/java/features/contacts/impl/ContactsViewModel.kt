@@ -2,25 +2,36 @@ package features.contacts.impl
 
 import android.Manifest
 import androidx.lifecycle.viewModelScope
-import com.wemaka.data.provider.ContactProvider
+import com.wemaka.data.model.DuplicateContactResult
+import com.wemaka.domain.DeleteDuplicateUseCase
+import com.wemaka.domain.GetContactsUseCase
 import features.common.BaseViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class ContactsViewModel(
-    private val contactsProvider: ContactProvider
+    private val getContactsUseCase: GetContactsUseCase,
+    private val deleteDuplicateUseCase: DeleteDuplicateUseCase
 ) : BaseViewModel() {
+    private val _loading = MutableStateFlow(false)
+    val loading = _loading.asStateFlow()
+
+    private val _deleteState = MutableStateFlow<DuplicateContactResult?>(null)
+    val deleteState = _deleteState.asStateFlow()
+
     private val isRead = MutableStateFlow(false)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val groupedContacts = isRead
         .filter { it }
-        .flatMapLatest { contactsProvider.contactsFlow() }
+        .flatMapLatest { getContactsUseCase() }
         .map { contacts ->
             contacts.groupBy { it.name.first().uppercase() }
         }
@@ -42,13 +53,7 @@ class ContactsViewModel(
     }
 
     fun onShowContacts() {
-        requestPermissions(
-            permissions = listOf(
-                Manifest.permission.READ_CONTACTS
-            )
-        ) {
-            isRead.value = true
-        }
+        isRead.value = true
     }
 
     fun onDeleteContactClick() {
@@ -57,17 +62,11 @@ class ContactsViewModel(
                 Manifest.permission.WRITE_CONTACTS
             )
         ) {
-//            deleteContact()
-        }
-    }
-
-    fun onCallClick() {
-        requestPermissions(
-            permissions = listOf(
-                Manifest.permission.CALL_PHONE
-            )
-        ) {
-//            startCall()
+            viewModelScope.launch {
+                _loading.value = true
+                _deleteState.value = deleteDuplicateUseCase()
+                _loading.value = false
+            }
         }
     }
 }

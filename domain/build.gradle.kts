@@ -5,5 +5,6 @@ plugins {
 androidConfig {}
 
 dependencies {
+    implementation(project(":data"))
     implementation(project(":core:common"))
 }

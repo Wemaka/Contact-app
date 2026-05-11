@@ -28,6 +28,8 @@ rootProject.name = "ContactsApp"
 
 include(":app")
 
+include(":aidl")
+
 include(":core:common")
 include(":core:navigation")
 

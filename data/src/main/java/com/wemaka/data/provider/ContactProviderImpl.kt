@@ -1,12 +1,23 @@
 package com.wemaka.data.provider
 
+import android.content.ContentProviderOperation
 import android.content.ContentResolver
+import android.database.ContentObserver
+import android.net.Uri
 import android.provider.ContactsContract
+import android.util.Log
+import com.wemaka.aidl.DeleteResultAidl
+import com.wemaka.aidl.DuplicateContactResultAidl
 import com.wemaka.data.model.Contact
+import core.common.normalizePhoneNumber
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 class ContactProviderImpl(
     private val contentResolver: ContentResolver
@@ -24,7 +35,7 @@ class ContactProviderImpl(
         ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE.toString()
     )
 
-    private fun getAllContact(): List<Contact> {
+    override fun getAllContact(): List<Contact> {
         val contacts = mutableListOf<Contact>()
 
         val cursor = contentResolver.query(
@@ -66,9 +77,77 @@ class ContactProviderImpl(
         return contacts.distinctBy { it.contactId }
     }
 
-    override fun contactsFlow(): Flow<List<Contact>> {
-        return flow {
-            emit(getAllContact())
-        }.flowOn(Dispatchers.IO)
+    override fun contactsFlow(): Flow<List<Contact>> = callbackFlow {
+        val observer = object : ContentObserver(null) {
+            override fun onChange(selfChange: Boolean) {
+                trySend(getAllContact())
+            }
+        }
+
+        contentResolver.registerContentObserver(
+            ContactsContract.Contacts.CONTENT_URI,
+            true,
+            observer
+        )
+
+        trySend(getAllContact())
+
+        awaitClose {
+            contentResolver.unregisterContentObserver(observer)
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun deleteDuplicateContacts(): DuplicateContactResultAidl {
+        val findDuplicate = findDuplicates()
+
+        if (findDuplicate.isEmpty()) return DuplicateContactResultAidl(
+            result = DeleteResultAidl.NOT_FOUND,
+            deleteCount = 0
+        )
+
+        val operations = ArrayList<ContentProviderOperation>()
+
+        findDuplicate.forEach { contactId ->
+            val uri = Uri.withAppendedPath(
+                ContactsContract.Contacts.CONTENT_URI,
+                contactId
+            )
+            operations.add(
+                ContentProviderOperation.newDelete(uri).build()
+            )
+        }
+
+        return try {
+            val results = contentResolver.applyBatch(ContactsContract.AUTHORITY, operations)
+            val deletedCount = results.count { it.count != null && it.count!! > 0 }
+            DuplicateContactResultAidl(
+                result = DeleteResultAidl.SUCCESS,
+                deleteCount = deletedCount
+            )
+        } catch (e: Exception) {
+            Log.e("ContactService", "Failed to delete contacts", e)
+            DuplicateContactResultAidl(
+                result = DeleteResultAidl.ERROR,
+                deleteCount = 0
+            )
+        }
+    }
+
+    private fun findDuplicates(): List<String> {
+        val contacts = getAllContact()
+
+        val grouped = contacts.groupBy {
+            it.name.trim().lowercase() + "|" +
+                    it.phoneNumber.normalizePhoneNumber()
+        }
+
+        val idsToDelete = mutableListOf<String>()
+        grouped.forEach { (_, contacts) ->
+            if (contacts.size > 1) {
+                idsToDelete.addAll(contacts.drop(1).map { it.contactId })
+            }
+        }
+
+        return idsToDelete
     }
 }

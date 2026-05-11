@@ -22,7 +22,7 @@ fun DefaultAvatar(
     modifier: Modifier = Modifier
 ) {
     val letter = remember(name) {
-        name?.first()?.uppercase() ?: "?"
+        name?.firstOrNull()?.uppercase() ?: "?"
     }
 
     val color = remember(id) {

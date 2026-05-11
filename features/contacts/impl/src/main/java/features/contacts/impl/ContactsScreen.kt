@@ -4,8 +4,10 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,7 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import components.CallPhoneTextProvider
@@ -28,6 +29,7 @@ import features.contacts.impl.components.ContactsContent
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ContactsScreen() {
     val viewModel: ContactsViewModel = koinViewModel()
@@ -66,7 +68,7 @@ fun ContactsScreen() {
                     Manifest.permission.READ_CONTACTS -> ReadContactsTextProvider()
                     Manifest.permission.WRITE_CONTACTS -> WriteContactsTextProvider()
                     Manifest.permission.CALL_PHONE -> CallPhoneTextProvider()
-                    else -> return@forEach
+                    else -> return
                 },
                 isPermanentlyDeclined = isPermanentlyDeclined,
                 onDismiss = viewModel::dismissDialog,
@@ -83,7 +85,6 @@ fun ContactsScreen() {
 
     LaunchedEffect(Unit) {
         viewModel.permissionRequests.collectLatest { request ->
-
             val deniedPermissions =
                 request.permissions.filter { permission ->
                     ContextCompat.checkSelfPermission(
@@ -105,15 +106,27 @@ fun ContactsScreen() {
     }
 
     LaunchedEffect(Unit) {
-        viewModel.onShowContacts()
+        viewModel.requestPermissions(
+            permissions = listOf(
+                Manifest.permission.READ_CONTACTS,
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        ) {
+            viewModel.onShowContacts()
+        }
     }
 
     ContactsContent(
         contacts = viewModel.groupedContacts.collectAsStateWithLifecycle().value,
+        isLoading = viewModel.loading.collectAsStateWithLifecycle().value,
+        deleteState = viewModel.deleteState.collectAsStateWithLifecycle().value,
         onCallClick = { phone ->
             Intent(Intent.ACTION_DIAL, "tel:$phone".toUri()).also {
                 context.startActivity(it)
             }
+        },
+        onDeleteDuplicateClick = {
+            viewModel.onDeleteContactClick()
         }
     )
 }

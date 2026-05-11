@@ -1,6 +1,6 @@
 <resources>
     <string name="grant_permission">Предоставьте разрешение</string>
-    <string name="confirm_permission">ОК</string>
+    <string name="confirm">ОК</string>
     <string name="alert_permission_title">Требуется разрешение</string>
     <string name="read_contacts_description">Приложению необходим доступ к вашим контактам, чтобы вы могли
         просматривать свой список контактов.</string>
@@ -14,4 +14,19 @@
         нажатием кнопки.</string>
     <string name="call_phone_declined">Звонки недоступны. Чтобы звонить контактам непосредственно из приложения,
         активируйте разрешение на телефонный звонок в настройках.</string>
+    <string name="button_delete_duplicate">Удалить дубликаты</string>
+    <string name="alert_delete_title">Удалить дубликаты</string>
+    <string name="alert_delete_description">Вы уверены, что хотите удалить полностью одинаковые контакты? Это действие нельзя будет отменить.</string>
+    <string name="alert_delete_confirm">Удалить</string>
+    <string name="alert_delete_dismiss">Отменить</string>
+
+    <string name="notification_title">Удаление дубликатов</string>
+    <string name="duplicate_not_found">Повторяющиеся контакты не найдены</string>
+    <plurals name="deleted_count_contacts">
+        <item quantity="one">Удален %d контакт</item>
+        <item quantity="few">Удалено %d контакта</item>
+        <item quantity="many">Удалено %d контактов</item>
+        <item quantity="other">Удалено %d контактов</item>
+    </plurals>
+    <string name="duplicate_delete_error">Произошла ошибка</string>
 </resources>

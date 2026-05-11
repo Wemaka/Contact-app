@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -28,11 +29,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
         compose = true
+        aidl = true
     }
 }
 
@@ -62,6 +64,8 @@ dependencies {
     implementation(libs.koin.androidx.compose.navigation)
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.android)
+
+    implementation(project(":aidl"))
 
     implementation(project(":core:common"))
     implementation(project(":core:navigation"))

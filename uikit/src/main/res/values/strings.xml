@@ -2,7 +2,7 @@
     <string name="app_name" translatable="false">ContactsApp</string>
 
     <string name="grant_permission">Grant permission</string>
-    <string name="confirm_permission">OK</string>
+    <string name="confirm">OK</string>
     <string name="alert_permission_title">Permission required</string>
     <string name="read_contacts_description">The app needs access to your contacts so that you can view your contact
         list.</string>
@@ -16,4 +16,17 @@
         touch of a button.</string>
     <string name="call_phone_declined">Calls are unavailable. To call contacts directly from the app, activate the
         phone call permission in the settings.</string>
+    <string name="button_delete_duplicate">Delete duplicate</string>
+    <string name="alert_delete_title">Removing duplicates</string>
+    <string name="alert_delete_description">Are you sure you want to delete completely identical contacts? This action cannot be undone.</string>
+    <string name="alert_delete_confirm">Delete</string>
+    <string name="alert_delete_dismiss">Cancel</string>
+
+    <string name="notification_title">Removing duplicates</string>
+    <string name="duplicate_not_found">Duplicate contacts were not found</string>
+    <plurals name="deleted_count_contacts">
+        <item quantity="one">Deleted %d contact</item>
+        <item quantity="other">Deleted %d contacts</item>
+    </plurals>
+    <string name="duplicate_delete_error">An error has occurred</string>
 </resources>

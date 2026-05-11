@@ -1,14 +1,15 @@
 plugins {
     id("common-convention")
-    alias(libs.plugins.ksp)
     id("kotlin-parcelize")
 }
 
 androidConfig {
     buildFeatures.aidl = true
+
+    sourceSets.getByName("main") {
+        aidl.directories.add("src/main/java")
+    }
 }
 
 dependencies {
-    implementation(project(":core:common"))
-    implementation(project(":aidl"))
 }
